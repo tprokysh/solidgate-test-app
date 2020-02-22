@@ -1,0 +1,6 @@
+{
+    "Api"       : "https://pay.solidgate.com",
+    "ApiPrefix" : "/api/v1/",
+    "CustomerId" : "unicorn",
+    "PrivateKey" : "20c20ee3-4173-4daa-87e5-dbcce8c7949d"
+}
