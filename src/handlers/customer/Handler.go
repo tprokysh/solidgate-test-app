@@ -21,12 +21,11 @@ func NewCustomerHandler(service customer.Create) Customer {
 func (handler Customer) Create(w http.ResponseWriter, r *http.Request) {
 	newCustomer := models.Customer{}
 	body, err := ioutil.ReadAll(r.Body)
-	json.Unmarshal(body, &newCustomer)
-
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
+	json.Unmarshal(body, &newCustomer)
 	user, err := handler.service.Create(newCustomer)
 	fmt.Println(user)
 

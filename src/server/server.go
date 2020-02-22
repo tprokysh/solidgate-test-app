@@ -44,7 +44,7 @@ func (s *Server) Run() {
 	orderService := orderService.NewOrderCreateService(orderRepository)
 	orderHandler := orderHandler.NewOrderHandler(orderService, solidgateApi)
 
-	chargeOperationService := operationService.NewChargeOperationService(solidgateApi)
+	chargeOperationService := operationService.NewChargeOperationService(orderRepository, solidgateApi)
 	operationsHandler := operationsHandler.NewOperationHandler(chargeOperationService)
 
 	route := mux.NewRouter()
