@@ -37,7 +37,8 @@ func getConfig() DataBase {
 func GetConnection() *gorm.DB {
 	cfg := getConfig()
 	fmt.Println(cfg)
-	dbUri := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s port=%s", cfg.Host, cfg.Username, cfg.Database, cfg.Password, cfg.Port)
+	dbUri := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s port=%s",
+		cfg.Host, cfg.Username, cfg.Database, cfg.Password, cfg.Port)
 	dbConnection, err := gorm.Open("postgres", dbUri)
 
 	if err != nil {

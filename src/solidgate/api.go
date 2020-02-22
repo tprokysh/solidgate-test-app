@@ -127,9 +127,6 @@ func (api *Api) makeRequest(url string, payloadJson []byte) ([]byte, error) {
 	client := &http.Client{}
 	res, err := client.Do(req)
 
-	// fmt.Println(ioutil.ReadAll(res.Body))
-	fmt.Println("tes")
-
 	if err != nil {
 		return nil, err
 	}
