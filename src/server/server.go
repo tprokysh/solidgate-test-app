@@ -46,8 +46,9 @@ func (s *Server) Run() {
 
 	chargeOperationService := operationService.NewChargeOperationService(orderRepository, solidgateApi)
 	refundOperationService := operationService.NewRefundOperationService(orderRepository, solidgateApi)
+	recurringOperationService := operationService.NewRecurringOperationService(orderRepository, solidgateApi)
 	callbackOperationService := operationService.NewCallbackOperationService(orderRepository, customerRepository, solidgateApi)
-	operationsHandler := operationsHandler.NewOperationHandler(chargeOperationService, refundOperationService, callbackOperationService, initOperationService)
+	operationsHandler := operationsHandler.NewOperationHandler(chargeOperationService, refundOperationService, recurringOperationService, callbackOperationService)
 
 	route := mux.NewRouter()
 
@@ -55,6 +56,7 @@ func (s *Server) Run() {
 	route.HandleFunc("/order", orderHandler.Create).Methods("POST")
 	route.HandleFunc("/customer/operation/charge", operationsHandler.Charge).Methods("POST")
 	route.HandleFunc("/customer/operation/refund", operationsHandler.Refund).Methods("POST")
+	route.HandleFunc("/customer/operation/recurring", operationsHandler.Recurring).Methods("POST")
 	route.HandleFunc("/callback", operationsHandler.Callback).Methods("POST")
 
 	http.Handle("/", route)
