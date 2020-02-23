@@ -1,12 +1,9 @@
 package customer
 
 import (
-	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 
-	"../../models"
 	"../../services/customer"
 )
 
@@ -19,19 +16,13 @@ func NewCustomerHandler(service customer.Create) Customer {
 }
 
 func (handler Customer) Create(w http.ResponseWriter, r *http.Request) {
-	newCustomer := models.Customer{}
 	body, err := ioutil.ReadAll(r.Body)
+	customer, err := handler.service.Create(body)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
-	json.Unmarshal(body, &newCustomer)
-	user, err := handler.service.Create(newCustomer)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-	}
-
-	fmt.Println(user)
 	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusCreated)
+	w.Write(customer)
 }

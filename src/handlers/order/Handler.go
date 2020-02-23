@@ -1,12 +1,9 @@
 package order
 
 import (
-	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 
-	"../../models"
 	"../../services/order"
 	"../../solidgate"
 )
@@ -21,14 +18,8 @@ func NewOrderHandler(service order.Create, solidgateApi *solidgate.Api) Order {
 }
 
 func (handler Order) Create(w http.ResponseWriter, r *http.Request) {
-	newOrder := models.Order{}
 	body, err := ioutil.ReadAll(r.Body)
-	json.Unmarshal(body, &newOrder)
-
 	order, err := handler.service.Create(body)
-
-	fmt.Println(order)
-
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}

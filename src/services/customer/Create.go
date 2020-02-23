@@ -1,7 +1,6 @@
 package customer
 
 import (
-	models "../../models"
 	customerRepository "../../repositories/customer"
 )
 
@@ -13,19 +12,12 @@ func NewCustomerCreateService(repository customerRepository.Customer) Create {
 	return Create{repository}
 }
 
-func (service *Create) Create(data models.Customer) (*models.Customer, error) {
-	customer := &models.Customer{
-		FirstName:      data.FirstName,
-		LastName:       data.LastName,
-		Email:          data.Email,
-		RecurringToken: "",
-	}
-
-	err := service.repository.Create(customer)
+func (service *Create) Create(data []byte) ([]byte, error) {
+	newCustomer, err := service.repository.Create(data)
 
 	if err != nil {
-		return customer, err
+		return newCustomer, err
 	}
 
-	return customer, nil
+	return newCustomer, nil
 }

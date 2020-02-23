@@ -1,6 +1,7 @@
 package customer
 
 import (
+	"encoding/json"
 	"strconv"
 
 	models "../../models"
@@ -16,8 +17,13 @@ func NewCustomerRepository(db *gorm.DB) Customer {
 	return Customer{db}
 }
 
-func (m *Customer) Create(customer *models.Customer) error {
-	return m.db.Create(customer).Error
+func (m *Customer) Create(data []byte) ([]byte, error) {
+	newCustomer := &models.Customer{}
+	json.Unmarshal(data, newCustomer)
+
+	result, _ := json.Marshal(m.db.Create(newCustomer))
+
+	return result, nil
 }
 
 func (m *Customer) GetCustomerById(customerId string) (*models.Customer, error) {
