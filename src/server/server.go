@@ -3,6 +3,8 @@ package server
 import (
 	"net/http"
 
+	"./router"
+
 	config "../config"
 	database "../database"
 	customerHandler "../handlers/customer"
@@ -17,12 +19,13 @@ import (
 	operationsHandler "../handlers/customer/operations"
 	operationService "../services/customer/operations"
 
-	"github.com/gorilla/mux"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	_ "github.com/lib/pq"
 )
 
-type Server struct{}
+type Server struct {
+	router router.Router
+}
 
 func NewServer() (server *Server) {
 	return &Server{}
@@ -50,15 +53,9 @@ func (s *Server) Run() {
 	callbackOperationService := operationService.NewCallbackOperationService(orderRepository, customerRepository, solidgateApi)
 	operationsHandler := operationsHandler.NewOperationHandler(chargeOperationService, refundOperationService, recurringOperationService, callbackOperationService)
 
-	route := mux.NewRouter()
+	s.router = router.NewRouter()
+	s.router.InitRoutes(orderHandler, customerHandler, operationsHandler)
 
-	route.HandleFunc("/customer", customerHandler.Create).Methods("POST")
-	route.HandleFunc("/order", orderHandler.Create).Methods("POST")
-	route.HandleFunc("/customer/operation/charge", operationsHandler.Charge).Methods("POST")
-	route.HandleFunc("/customer/operation/refund", operationsHandler.Refund).Methods("POST")
-	route.HandleFunc("/customer/operation/recurring", operationsHandler.Recurring).Methods("POST")
-	route.HandleFunc("/callback", operationsHandler.Callback).Methods("POST")
-
-	http.Handle("/", route)
-	http.ListenAndServe("localhost:8080", nil)
+	server := &http.Server{Addr: "localhost:8080", Handler: s.router.Mux}
+	server.ListenAndServe()
 }
