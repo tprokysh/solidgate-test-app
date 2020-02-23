@@ -8,26 +8,16 @@ import (
 	"../../../solidgate"
 )
 
-type Charge struct {
+type Refund struct {
 	orderRepository orderRepository.Order
 	solidgateApi    *solidgate.Api
 }
 
-type resOrder struct {
-	Order struct {
-		Status string
-	}
+func NewRefundOperationService(orderRepository orderRepository.Order, solidgateApi *solidgate.Api) Refund {
+	return Refund{orderRepository, solidgateApi}
 }
 
-type reqOrder struct {
-	OrderId string
-}
-
-func NewChargeOperationService(orderRepository orderRepository.Order, solidgateApi *solidgate.Api) Charge {
-	return Charge{orderRepository, solidgateApi}
-}
-
-func (service *Charge) Charge(data []byte) ([]byte, error) {
+func (service *Refund) Refund(data []byte) ([]byte, error) {
 	reqOrder := reqOrder{}
 	json.Unmarshal(data, &reqOrder)
 
@@ -40,7 +30,7 @@ func (service *Charge) Charge(data []byte) ([]byte, error) {
 		return json.Marshal(orderError)
 	}
 
-	res, err := service.solidgateApi.Charge(data)
+	res, err := service.solidgateApi.Refund(data)
 	if err != nil {
 		return res, err
 	}

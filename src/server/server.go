@@ -45,13 +45,17 @@ func (s *Server) Run() {
 	orderHandler := orderHandler.NewOrderHandler(orderService, solidgateApi)
 
 	chargeOperationService := operationService.NewChargeOperationService(orderRepository, solidgateApi)
-	operationsHandler := operationsHandler.NewOperationHandler(chargeOperationService)
+	refundOperationService := operationService.NewRefundOperationService(orderRepository, solidgateApi)
+	callbackOperationService := operationService.NewCallbackOperationService(orderRepository, customerRepository, solidgateApi)
+	operationsHandler := operationsHandler.NewOperationHandler(chargeOperationService, refundOperationService, callbackOperationService, initOperationService)
 
 	route := mux.NewRouter()
 
 	route.HandleFunc("/customer", customerHandler.Create).Methods("POST")
 	route.HandleFunc("/order", orderHandler.Create).Methods("POST")
 	route.HandleFunc("/customer/operation/charge", operationsHandler.Charge).Methods("POST")
+	route.HandleFunc("/customer/operation/refund", operationsHandler.Refund).Methods("POST")
+	route.HandleFunc("/callback", operationsHandler.Callback).Methods("POST")
 
 	http.Handle("/", route)
 	http.ListenAndServe("localhost:8080", nil)

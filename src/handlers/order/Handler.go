@@ -26,6 +26,7 @@ func (handler Order) Create(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal(body, &newOrder)
 
 	order, err := handler.service.Create(newOrder)
+
 	fmt.Println(order)
 
 	if err != nil {

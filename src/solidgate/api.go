@@ -101,7 +101,6 @@ func (api *Api) FormUrl(data []byte) (string, error) {
 }
 
 func (api *Api) generateSignature(data []byte) string {
-	fmt.Println("api", api)
 	payloadData := api.MerchantId + string(data) + api.MerchantId
 
 	keyForSign := []byte(api.PrivateKey)

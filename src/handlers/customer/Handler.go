@@ -27,11 +27,11 @@ func (handler Customer) Create(w http.ResponseWriter, r *http.Request) {
 
 	json.Unmarshal(body, &newCustomer)
 	user, err := handler.service.Create(newCustomer)
-	fmt.Println(user)
-
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
+
+	fmt.Println(user)
 	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 }
