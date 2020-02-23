@@ -1,6 +1,7 @@
 package order
 
 import (
+	"encoding/json"
 	"strconv"
 
 	models "../../models"
@@ -16,8 +17,15 @@ func NewOrderRepository(db *gorm.DB) Order {
 	return Order{db}
 }
 
-func (m *Order) Create(order *models.Order) error {
-	return m.db.Create(order).Error
+func (m *Order) Create(data []byte) ([]byte, error) {
+	newOrder := &models.Order{
+		Status: "pending",
+	}
+	json.Unmarshal(data, newOrder)
+
+	result, _ := json.Marshal(m.db.Create(newOrder))
+
+	return result, nil
 }
 
 func (m *Order) GetOrder(orderId string) (*models.Order, error) {

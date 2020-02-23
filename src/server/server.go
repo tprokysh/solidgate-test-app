@@ -3,14 +3,14 @@ package server
 import (
 	"net/http"
 
+	"../config"
+	database "../database"
+	"../solidgate"
 	"./router"
 
-	config "../config"
-	database "../database"
 	customerHandler "../handlers/customer"
 	customerRepository "../repositories/customer"
 	customerService "../services/customer"
-	"../solidgate"
 
 	orderHandler "../handlers/order"
 	orderRepository "../repositories/order"
@@ -34,19 +34,18 @@ func NewServer() (server *Server) {
 func (s *Server) Run() {
 	dbConnection := database.GetConnection()
 	apiCfg := config.GetApiConfig()
-
 	apiUrl := apiCfg.Api + apiCfg.ApiPrefix
 	solidgateApi := solidgate.NewSolidGateApi(apiCfg.CustomerId, apiCfg.PrivateKey, &apiUrl)
 
-	//TODO: move this routes into single file Router.go
+	//customer
 	customerRepository := customerRepository.NewCustomerRepository(dbConnection)
 	customerService := customerService.NewCustomerCreateService(customerRepository)
 	customerHandler := customerHandler.NewCustomerHandler(customerService)
-
+	//order
 	orderRepository := orderRepository.NewOrderRepository(dbConnection)
 	orderService := orderService.NewOrderCreateService(orderRepository)
 	orderHandler := orderHandler.NewOrderHandler(orderService, solidgateApi)
-
+	//operation
 	chargeOperationService := operationService.NewChargeOperationService(orderRepository, solidgateApi)
 	refundOperationService := operationService.NewRefundOperationService(orderRepository, solidgateApi)
 	recurringOperationService := operationService.NewRecurringOperationService(orderRepository, solidgateApi)

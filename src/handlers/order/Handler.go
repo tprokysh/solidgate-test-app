@@ -25,7 +25,7 @@ func (handler Order) Create(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	json.Unmarshal(body, &newOrder)
 
-	order, err := handler.service.Create(newOrder)
+	order, err := handler.service.Create(body)
 
 	fmt.Println(order)
 
@@ -35,4 +35,5 @@ func (handler Order) Create(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusCreated)
+	w.Write(order)
 }
