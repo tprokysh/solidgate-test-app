@@ -1,7 +1,7 @@
 package customer
 
 import (
-	customerRepository "../../repositories/customer"
+	customerRepository "solidgate-test-app/src/repositories/customer"
 )
 
 type Create struct {

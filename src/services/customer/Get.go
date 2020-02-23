@@ -1,15 +1,15 @@
 package customer
 
 import (
-	models "../../models"
-	customerRepository "../../repositories/customer"
+	"solidgate-test-app/src/models"
+	customerR "solidgate-test-app/src/repositories/customer"
 )
 
 type Get struct {
-	repository customerRepository.Customer
+	repository customerR.Customer
 }
 
-func NewCustomerGetService(repository customerRepository.Customer) Get {
+func NewCustomerGetService(repository customerR.Customer) Get {
 	return Get{repository}
 }
 

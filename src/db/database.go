@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	models "../models"
-
 	"github.com/jinzhu/gorm"
+	"solidgate-test-app/src/models"
 )
 
 type DataBase struct {
@@ -18,7 +17,7 @@ type DataBase struct {
 	Port     string
 }
 
-const configFile = "./etc/db.json"
+const configFile = "etc/db.json"
 
 func getConfig() DataBase {
 	file, _ := os.Open(configFile)

@@ -1,10 +1,10 @@
 package router
 
 import (
-	"../../handlers/customer"
-	"../../handlers/customer/operations"
-	"../../handlers/order"
 	"github.com/gorilla/mux"
+	"solidgate-test-app/src/handlers/customer"
+	"solidgate-test-app/src/handlers/customer/operations"
+	"solidgate-test-app/src/handlers/order"
 )
 
 type Router struct {

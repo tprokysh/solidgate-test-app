@@ -1,7 +1,7 @@
 package order
 
 import (
-	orderRepository "../../repositories/order"
+	orderRepository "solidgate-test-app/src/repositories/order"
 )
 
 type Create struct {

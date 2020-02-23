@@ -1,10 +1,11 @@
 package operations
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
-	"../../../services/customer/operations"
+	"solidgate-test-app/src/services/customer/operations"
 )
 
 type Operation struct {
@@ -72,12 +73,10 @@ func (handler Operation) Callback(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
-	res, err := handler.callbackService.Callback(body)
+	err = handler.callbackService.Callback(body)
 	if err != nil {
+		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
-
-	w.Header().Set("Content-type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	w.Write(res)
 }

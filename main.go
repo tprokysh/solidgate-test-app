@@ -1,7 +1,7 @@
 package main
 
 import (
-	"./src/server"
+	"solidgate-test-app/src/server"
 )
 
 func main() {

@@ -3,13 +3,14 @@ package operations
 import (
 	"encoding/json"
 
-	"../../../errors"
-	orderRepository "../../../repositories/order"
-	"../../../solidgate"
+	"solidgate-test-app/src/errors"
+	orderR "solidgate-test-app/src/repositories/order"
+
+	solidgate "bitbucket.org/solidgate/go-sdk"
 )
 
 type Charge struct {
-	orderRepository orderRepository.Order
+	orderRepository orderR.Order
 	solidgateApi    *solidgate.Api
 }
 
@@ -23,7 +24,7 @@ type reqOrder struct {
 	OrderId string
 }
 
-func NewChargeOperationService(orderRepository orderRepository.Order, solidgateApi *solidgate.Api) Charge {
+func NewChargeOperationService(orderRepository orderR.Order, solidgateApi *solidgate.Api) Charge {
 	return Charge{orderRepository, solidgateApi}
 }
 
@@ -33,14 +34,13 @@ func (service *Charge) Charge(data []byte) ([]byte, error) {
 
 	order, err := service.orderRepository.GetOrder(reqOrder.OrderId)
 	if err != nil {
-		orderError := errors.OrderError{
-			Status:  "400",
-			Message: "Order not found",
-		}
+		orderError := errors.OrderNotFound()
+
 		return json.Marshal(orderError)
 	}
 
 	res, err := service.solidgateApi.Charge(data)
+
 	if err != nil {
 		return res, err
 	}
@@ -48,12 +48,14 @@ func (service *Charge) Charge(data []byte) ([]byte, error) {
 	result := resOrder{}
 	json.Unmarshal(res, &result)
 
+	if result.Order.Status == "" {
+		return res, err
+	}
+
 	err = service.orderRepository.UpdateOrderStatus(order, result.Order.Status)
 	if err != nil {
-		orderError := errors.OrderError{
-			Status:  "400",
-			Message: "Can't update order status",
-		}
+		orderError := errors.OrderFailUpdateStatus()
+
 		return json.Marshal(orderError)
 	}
 

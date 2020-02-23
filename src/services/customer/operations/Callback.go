@@ -1,19 +1,16 @@
 package operations
 
 import (
-	// "bytes"
 	"encoding/json"
-	"fmt"
+	customerR "solidgate-test-app/src/repositories/customer"
+	orderR "solidgate-test-app/src/repositories/order"
 
-	"../../../errors"
-	customerRepository "../../../repositories/customer"
-	orderRepository "../../../repositories/order"
-	"../../../solidgate"
+	solidgate "bitbucket.org/solidgate/go-sdk"
 )
 
 type Callback struct {
-	orderRepository    orderRepository.Order
-	customerRepository customerRepository.Customer
+	orderRepository    orderR.Order
+	customerRepository customerR.Customer
 	solidgateApi       *solidgate.Api
 }
 
@@ -31,44 +28,34 @@ type resCard struct {
 	}
 }
 
-func NewCallbackOperationService(orderRepository orderRepository.Order, customerRepository customerRepository.Customer, solidgateApi *solidgate.Api) Callback {
+func NewCallbackOperationService(orderRepository orderR.Order, customerRepository customerR.Customer, solidgateApi *solidgate.Api) Callback {
 	return Callback{orderRepository, customerRepository, solidgateApi}
 }
 
-func (service *Callback) Callback(data []byte) ([]byte, error) {
+func (service *Callback) Callback(data []byte) error {
 	responseCard := resCard{}
 	json.Unmarshal(data, &responseCard)
 
-	fmt.Println("token", responseCard.Transaction.Card.CardToken.Token)
-	fmt.Println("status", responseCard.Order.Status)
-	fmt.Println("order_id", responseCard.Order.OrderId)
+	if responseCard.Order.OrderId == "" || responseCard.Order.Status == "" {
+		return nil
+	}
 
 	order, err := service.orderRepository.GetOrder(responseCard.Order.OrderId)
 	if err != nil {
-		fmt.Println("FIRST ERROR")
-		orderError := errors.OrderNotFound()
-		return json.Marshal(orderError)
+		return err
 	}
 
 	err = service.orderRepository.UpdateOrderStatus(order, responseCard.Order.Status)
 	if err != nil {
-		fmt.Println("SECOND ERROR")
-		orderError := errors.OrderError{
-			Status:  "400",
-			Message: "Can't update order status",
-		}
-		return json.Marshal(orderError)
+		return err
 	}
 
 	customer, err := service.customerRepository.GetCustomerById(order.CustomerId)
 	if err != nil {
-		fmt.Println("THIRD ERROR")
-		customerError := errors.CustomerNotFound()
-		return json.Marshal(customerError)
+		return err
 	}
 
 	err = service.customerRepository.UpdateCustomerToken(customer, responseCard.Transaction.Card.CardToken.Token)
-	res, _ := json.Marshal(responseCard)
 
-	return res, nil
+	return nil
 }

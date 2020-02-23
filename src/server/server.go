@@ -3,21 +3,22 @@ package server
 import (
 	"net/http"
 
-	"../config"
-	database "../database"
-	"../solidgate"
-	"./router"
+	"solidgate-test-app/src/config"
+	"solidgate-test-app/src/db"
+	"solidgate-test-app/src/server/router"
 
-	customerHandler "../handlers/customer"
-	customerRepository "../repositories/customer"
-	customerService "../services/customer"
+	solidgate "bitbucket.org/solidgate/go-sdk"
 
-	orderHandler "../handlers/order"
-	orderRepository "../repositories/order"
-	orderService "../services/order"
+	customerH "solidgate-test-app/src/handlers/customer"
+	customerR "solidgate-test-app/src/repositories/customer"
+	customerS "solidgate-test-app/src/services/customer"
 
-	operationsHandler "../handlers/customer/operations"
-	operationService "../services/customer/operations"
+	orderH "solidgate-test-app/src/handlers/order"
+	orderR "solidgate-test-app/src/repositories/order"
+	orderS "solidgate-test-app/src/services/order"
+
+	operationsH "solidgate-test-app/src/handlers/customer/operations"
+	operationS "solidgate-test-app/src/services/customer/operations"
 
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	_ "github.com/lib/pq"
@@ -32,25 +33,24 @@ func NewServer() (server *Server) {
 }
 
 func (s *Server) Run() {
-	dbConnection := database.GetConnection()
+	dbConnection := db.GetConnection()
 	apiCfg := config.GetApiConfig()
-	apiUrl := apiCfg.Api + apiCfg.ApiPrefix
-	solidgateApi := solidgate.NewSolidGateApi(apiCfg.CustomerId, apiCfg.PrivateKey, &apiUrl)
+	solidgateApi := solidgate.NewSolidGateApi(apiCfg.CustomerId, apiCfg.PrivateKey, nil)
 
 	//customer
-	customerRepository := customerRepository.NewCustomerRepository(dbConnection)
-	customerService := customerService.NewCustomerCreateService(customerRepository)
-	customerHandler := customerHandler.NewCustomerHandler(customerService)
+	customerRepository := customerR.NewCustomerRepository(dbConnection)
+	customerService := customerS.NewCustomerCreateService(customerRepository)
+	customerHandler := customerH.NewCustomerHandler(customerService)
 	//order
-	orderRepository := orderRepository.NewOrderRepository(dbConnection)
-	orderService := orderService.NewOrderCreateService(orderRepository)
-	orderHandler := orderHandler.NewOrderHandler(orderService, solidgateApi)
+	orderRepository := orderR.NewOrderRepository(dbConnection)
+	orderService := orderS.NewOrderCreateService(orderRepository)
+	orderHandler := orderH.NewOrderHandler(orderService, solidgateApi)
 	//operation
-	chargeOperationService := operationService.NewChargeOperationService(orderRepository, solidgateApi)
-	refundOperationService := operationService.NewRefundOperationService(orderRepository, solidgateApi)
-	recurringOperationService := operationService.NewRecurringOperationService(orderRepository, solidgateApi)
-	callbackOperationService := operationService.NewCallbackOperationService(orderRepository, customerRepository, solidgateApi)
-	operationsHandler := operationsHandler.NewOperationHandler(chargeOperationService, refundOperationService, recurringOperationService, callbackOperationService)
+	chargeOperationService := operationS.NewChargeOperationService(orderRepository, solidgateApi)
+	refundOperationService := operationS.NewRefundOperationService(orderRepository, solidgateApi)
+	recurringOperationService := operationS.NewRecurringOperationService(orderRepository, solidgateApi)
+	callbackOperationService := operationS.NewCallbackOperationService(orderRepository, customerRepository, solidgateApi)
+	operationsHandler := operationsH.NewOperationHandler(chargeOperationService, refundOperationService, recurringOperationService, callbackOperationService)
 
 	s.router = router.NewRouter()
 	s.router.InitRoutes(orderHandler, customerHandler, operationsHandler)

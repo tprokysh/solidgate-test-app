@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"strconv"
 
-	models "../../models"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"solidgate-test-app/src/models"
 )
 
 type Order struct {

@@ -13,7 +13,7 @@ type ApiConfig struct {
 	PrivateKey string
 }
 
-const apiConfigFile = "./etc/config.json"
+const apiConfigFile = "etc/config.json"
 
 func GetApiConfig() ApiConfig {
 	apiFile, _ := os.Open(apiConfigFile)

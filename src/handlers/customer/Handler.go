@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"../../services/customer"
+	"solidgate-test-app/src/services/customer"
 )
 
 type Customer struct {

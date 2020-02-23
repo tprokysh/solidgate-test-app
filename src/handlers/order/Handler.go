@@ -4,8 +4,8 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"../../services/order"
-	"../../solidgate"
+	"bitbucket.org/solidgate/go-sdk"
+	"solidgate-test-app/src/services/order"
 )
 
 type Order struct {
