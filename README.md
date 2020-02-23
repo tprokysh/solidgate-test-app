@@ -40,6 +40,7 @@ localhost:8080/customer
 localhost:8080/order
 </pre>
 7. So try charge this order <br>
+DONT FORGET PUT YOUR HGROK URL IN CALLBACK FOR SUCCESS CALLBACK!!!
 <pre>
 localhost:8080/customer/operation/charge
 </pre>
