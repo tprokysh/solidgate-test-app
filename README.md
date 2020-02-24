@@ -50,7 +50,7 @@ If orderId still processing, change orderId in database with random number and t
 localhost:8080/customer/operation/refund
 </pre>
 If orderId still processing, change orderId in database with random number and try again <br>
-9. Finally, try the recurring
+9. Finally, try the recurring (you can get recurring token in customer table(saved, after first success customer trasaction))
 <pre>
 localhost:8080/customer/operation/recurring
 </pre>
