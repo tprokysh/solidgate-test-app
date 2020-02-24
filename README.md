@@ -10,7 +10,7 @@ cd solidgate-test-app
 2.Copy config files, change data, and create database!
 <pre>
 cp etc/config.json.sample etc/config.json
-cp etc/db.json.sapmle etc/db.json
+cp etc/db.json.sample etc/db.json
 </pre>
 3.For callback you need install ngrok! <br>
 https://dashboard.ngrok.com/get-started <br>
